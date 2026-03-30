@@ -718,25 +718,19 @@ class FreeEAnalysis:
 
     Parameters
     ----------
-
+    e_array_list : list of np.ndarray
+        List of energy arrays, one per window.  Each array has shape
+        ``(n_frames, n_states)`` and contains reduced energies (in kBT units).
+    temperature : unit.Quantity
+        Simulation temperature (e.g. ``298.15 * unit.kelvin``).
+    drop_equil : bool
+        Whether to discard equilibration frames (default True).
     """
-    def __init__(self, file_list: list, keyword: str, separator: str, drop_equil: bool=True, begin: int=0):
-        self.file_list = file_list
-        data_T_all = [self.read_energy(f, keyword=keyword, separator=separator, begin=begin) for f in self.file_list]
-
-        self.temperature = None
-        self.kBT = None
-        if data_T_all[0][1] is not None:
-            # all the temperature should be the same
-            t_all = [data[1].value_in_unit(unit.kelvin) for data in data_T_all]
-            if not np.all(np.isclose(t_all[1], [t for t in t_all])):
-                msg = "\n".join([f"{f}: {t}" for f, t in zip(self.file_list, [data[1] for data in data_T_all])])
-                raise ValueError(f"Temperature are not the same in given files:\n"+msg)
-
-            self.temperature = data_T_all[0][1]
-            self.kBT = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA * self.temperature
-
-        self.U_all = [i[0] for i in data_T_all]
+    def __init__(self, e_array_list: list, temperature: unit.Quantity, drop_equil: bool = True):
+        self.n_states = len(e_array_list)
+        self.temperature = temperature
+        self.kBT = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA * self.temperature
+        self.U_all = e_array_list
         self.u_unco = None
         self.N_k = None
         self.eq_time = None
@@ -822,15 +816,13 @@ class FreeEAnalysis:
 
     def print_uncorrelate(self):
         """
-        Print the number of uncorrelated sample in each file
+        Print the number of uncorrelated samples in each window.
         """
-        max_width = max(len(str(fname)) for fname in self.file_list)
-        max_width = max(max_width, 9)
-        print(f"{'File Name':<{max_width}} |  N/N_all   | Equil")
-        print("-" * (max_width + 20))  # Add a separator line
+        print(f"{'Window':>6} |  N/N_all   | Equil")
+        print("-" * 30)
         N = [len(u) for u in self.U_all]
-        for fname, n, n_all, eq0 in zip(self.file_list, self.N_k, N, self.eq_time):
-            print(f"{str(fname):<{max_width}} | {n:>4d}/{n_all:<4d} | {eq0:4d}")
+        for win, (n, n_all, eq0) in enumerate(zip(self.N_k, N, self.eq_time)):
+            print(f"{win:>6} | {n:>4d}/{n_all:<4d} | {eq0:4d}")
 
     def mbar_U_all(self):
         kBT_val = self.kBT.value_in_unit(unit.kilocalorie_per_mole)
