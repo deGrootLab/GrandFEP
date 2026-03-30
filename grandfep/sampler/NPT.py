@@ -1124,6 +1124,40 @@ class BaseNPTWaterMCSampler:
 
 class NoneqNPTWaterMCSampler(BaseNPTWaterMCSampler):
     """
+    Non-equilibrium NPT Water MC sampler for swapping water molecules between bulk and active site.
+
+    This sampler transfers water molecules between the bulk solvent and a defined active site
+    using a non-equilibrium (NEQ) candidate Monte Carlo protocol. Two dedicated *switching
+    waters* are reserved at the end of the water residue list:
+
+    - **swit6** (second-to-last water residue): always real (``lambda_vdw_swit6 = 1``,
+      ``lambda_coulomb_swit6 = 1``) in normal eq-sampling.
+    - **swit7** (last water residue): always ghost (``lambda_vdw_swit7 = 0``,
+      ``lambda_coulomb_swit7 = 0``) in normal eq-sampling.
+
+    **Move protocol** (shared by :meth:`move_in` and :meth:`move_out`):
+
+    1. *Setup* — swap one of the switching waters into the target region (active site or bulk)
+       and swap the other switching water with a randomly chosen water in the source region.
+    2. *NEQ work process* (:meth:`work_process`) — simultaneously annihilate swit6
+       (λ: 1 → 0) and insert swit7 (λ: 0 → 1) via a series of perturbation + propagation
+       steps.  The accumulated protocol work *W* is used in the acceptance criterion.
+       After the protocol, λ parameters are reset to (swit6 = 1, swit7 = 0).
+    3. *Acceptance* — Metropolis criterion with GCMC volume factors:
+
+       - **move_in**: ``min(1, exp(−βW) · N_B · V_A / N_A / V_B)``
+       - **move_out**: ``min(1, exp(−βW) · N_A · V_B / N_B / V_A)``
+
+       where N_A / N_B are the water counts in active-site / bulk, and V_A / V_B are the
+       corresponding volumes evaluated at the appropriate end-points for detailed balance.
+
+    4. *Finalise* — if accepted, swap swit6 and swit7 positions and negate velocities
+       to restore the semantic invariant (swit6 = real, swit7 = ghost) and satisfy
+       microscopic reversibility.  If rejected, restore the full saved state.
+
+    This class requires a **Hybrid_REST2** system (built by
+    ``HybridTopologyFactoryREST2``). The MPI replica-exchange variant is
+    :class:`NoneqNPTWaterMCSamplerMPI`.
     """
     def __init__(self,
                  system: openmm.System,
