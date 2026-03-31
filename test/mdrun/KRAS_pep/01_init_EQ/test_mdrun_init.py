@@ -30,7 +30,7 @@ for dir in test_dir.glob("?"):
 
 # --- prepare yml ---
 # Use the 02_MDRUN/0 yml (full lambda schedule, state 0) and add nsteps.
-src_yml = test_dir / "../02_MDRUN/0/npt_test.yml"
+src_yml = test_dir / "../02_MDRUN/npt.yml"
 mdp_yml = yaml.safe_load(src_yml.read_text())
 for win in range(8):
     win_path = test_dir / f"{win}"
