@@ -61,7 +61,7 @@ opt_settings = {
     "template_yml" : test_dir / "npt_template.yml",
     "base_dir"     : test_dir,
     "nwin"         : 8,
-    "ncycle"       : 300,
+    "ncycle"       : 500,
     "maxh"         : 1.0,
     "lr"           : 0.8,
     "max_step"     : 0.08,
