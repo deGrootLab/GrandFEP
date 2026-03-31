@@ -592,6 +592,7 @@ class md_params_yml:
 
     def __init__(self, yml_file=None):
         # default unit attribute
+
         self._unit_map = {
             "dt": unit.picoseconds,
             "tau_t": unit.picoseconds,
@@ -628,6 +629,7 @@ class md_params_yml:
         self.n_propagation = 20
         self.init_lambda_state = 0
         self.calc_neighbor_only = False
+        self.CMMotionRemover = true
         self.md_gc_re_protocol = [("MD", 200),
                                   ("GC", 1),
                                   ("MD", 200),

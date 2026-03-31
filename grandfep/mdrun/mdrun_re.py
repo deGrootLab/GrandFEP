@@ -162,7 +162,8 @@ class MdRunRE:
             system.addForce(posres)
             if rank == 0:
                 print(f"Restraints on {n_res} atoms: {set(res_names)}")
-        else:
+        elif mdp.CMMotionRemover:
+            print("Add Center of Mass Motion Remove")
             system.addForce(openmm.CMMotionRemover())
 
         # --- sampler ---
