@@ -197,3 +197,15 @@ In_end*.pdb
 In_start*.pdb
 tmp.pdb
 
+# mdrun initial eq output
+/test/mdrun/KRAS_pep/01_init_EQ/? 
+
+# mdrun RE_NPT output
+/test/mdrun/KRAS_pep/02_MDRUN/?/npt_test.*
+
+# mdrun lambda opt output
+/test/mdrun/KRAS_pep/03_LambdaOpt/opt_[1-9]/
+/test/mdrun/KRAS_pep/03_LambdaOpt/opt_0/?/npt.*
+/test/mdrun/KRAS_pep/03_LambdaOpt/opt_0/mbar/
+/test/mdrun/KRAS_pep/03_LambdaOpt/opt_0/lam.yml
+/test/mdrun/KRAS_pep/03_LambdaOpt/opt_convergence.csv

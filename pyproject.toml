@@ -42,7 +42,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["grandfep", "grandfep.sampler"]
+packages = ["grandfep", "grandfep.sampler", "grandfep.mdrun"]
 
 [tool.setuptools.dynamic]
 version = { attr = "grandfep._version.__version__" }
