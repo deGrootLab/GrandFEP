@@ -212,6 +212,11 @@ class MdRunRE:
 
         samp.logger.info(f"MdRunRE: pdb={self.pdb} system={self.system} "
                          f"yml={self.yml} mode={self.mode} deffnm={self.deffnm}")
+
+        samp.logger.info("Forces in the system:")
+        for force in samp.system.getForces():
+            samp.logger.info(f"    Force: {force.getName()}")
+
         if rank == 0:
             _check_bond_periods(samp, mdp.dt)
 
