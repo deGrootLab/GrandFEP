@@ -27,7 +27,7 @@ class NPTSampler:
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  rst_file: str = "md.rst7",
                  dcd_file: str = None,
                  append: bool = False,
@@ -52,8 +52,9 @@ class NPTSampler:
             Log file path for the simulation
         integrator_str : str
             "BAOABIntegrator" or "LangevinMiddleIntegrator"
-        platform : openmm.Platform
-            OpenMM platform to use for the simulation. Default is 'CUDA'.
+        platform :
+            The OpenMM computational platform to use. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         rst_file : str
             Restart file path for the simulation. Default is "md.rst7".
         dcd_file : str
@@ -96,6 +97,14 @@ class NPTSampler:
             integrator = openmm.LangevinMiddleIntegrator(temperature, collision_rate, timestep)
         else:
             raise ValueError(f"Integrator {integrator_str} has not been implemented.")
+        
+        if platform is None:
+            for name in ('CUDA', 'OpenCL', 'CPU'):
+                try:
+                    platform = openmm.Platform.getPlatformByName(name)
+                    break
+                except Exception:
+                    continue
         #: Simulation ties together Topology, System, Integrator, and Context in this sampler.
         self.simulation: app.Simulation = app.Simulation(self.topology, self.system, integrator, platform)
 
@@ -208,7 +217,7 @@ class NPTSamplerMPI(_ReplicaExchangeMixin, NPTSampler):
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  rst_file: str = "md.rst7",
                  dcd_file: str = None,
                  append: bool = False,
@@ -234,8 +243,9 @@ class NPTSamplerMPI(_ReplicaExchangeMixin, NPTSampler):
             Log file path for the simulation
         integrator_str:
             "BAOABIntegrator" or "LangevinMiddleIntegrator".
-        platform : openmm.Platform
-            OpenMM platform to use for the simulation. Default is 'CUDA'.
+        platform :
+            The OpenMM computational platform to use. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         rst_file : str
             Restart file path for the simulation. Default is "md.rst7".
         dcd_file : str
@@ -446,7 +456,7 @@ class BaseNPTWaterMCSampler:
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  water_resname: str = "HOH",
                  water_O_name: str = "O",
                  rst_file: str = "md.rst7",
@@ -474,7 +484,8 @@ class BaseNPTWaterMCSampler:
         integrator_str:
             "BAOABIntegrator" or "LangevinMiddleIntegrator"
         platform : openmm.Platform
-            OpenMM platform to use for the simulation. Default is 'CUDA'.
+            OpenMM platform to use for the simulation. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         water_resname : str
             The residue name of water in the system. Default is "HOH".
         water_O_name : str
@@ -549,6 +560,13 @@ class BaseNPTWaterMCSampler:
             raise ValueError(
                 f"The integrator {integrator_str} is not supported. Please use 'BAOABIntegrator' or 'LangevinMiddleIntegrator'.")
 
+        if platform is None:
+            for name in ('CUDA', 'OpenCL', 'CPU'):
+                try:
+                    platform = openmm.Platform.getPlatformByName(name)
+                    break
+                except Exception:
+                    continue
         self.simulation = app.Simulation(self.topology, self.system, self.compound_integrator, platform)
         self.compound_integrator.setCurrentIntegrator(0)
 
@@ -1167,7 +1185,7 @@ class NoneqNPTWaterMCSampler(BaseNPTWaterMCSampler):
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  water_resname: str = "HOH",
                  water_O_name: str = "O",
                  position: unit.Quantity = None,
@@ -1196,7 +1214,8 @@ class NoneqNPTWaterMCSampler(BaseNPTWaterMCSampler):
         integrator_str :
             "BAOABIntegrator" or "LangevinMiddleIntegrator"
         platform : openmm.Platform
-            OpenMM platform to use for the simulation. Default is 'CUDA'.
+            OpenMM platform to use for the simulation. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         water_resname : str
             The residue name of water in the system. Default is "HOH".
         water_O_name : str
@@ -1715,7 +1734,7 @@ class NoneqNPTWaterMCSamplerMPI(_ReplicaExchangeMixin, NoneqNPTWaterMCSampler):
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  water_resname: str = "HOH",
                  water_O_name: str = "O",
                  position: unit.Quantity = None,
@@ -1743,8 +1762,9 @@ class NoneqNPTWaterMCSamplerMPI(_ReplicaExchangeMixin, NoneqNPTWaterMCSampler):
             Timestep of the simulation, with unit. e.g., 4 * unit.femtoseconds with Hydrogen Mass Repartitioning
         log : Union[str, Path]
             Log file path for the simulation
-        platform : openmm.Platform
-            OpenMM platform to use for the simulation. Default is 'CUDA'.
+        platform :
+            The OpenMM computational platform to use. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         water_resname : str
             The residue name of water in the system. Default is "HOH".
         water_O_name : str

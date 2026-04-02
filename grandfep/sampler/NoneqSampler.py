@@ -34,7 +34,7 @@ class NoneqGrandCanonicalMonteCarloSampler(BaseGrandCanonicalMonteCarloSampler):
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  water_resname: str = "HOH",
                  water_O_name: str = "O",
                  position: unit.Quantity = None,
@@ -69,7 +69,8 @@ class NoneqGrandCanonicalMonteCarloSampler(BaseGrandCanonicalMonteCarloSampler):
         log :
             Path to the log file. This file will be opened in appended mode.
         platform :
-            The OpenMM computational platform to use. Default is CUDA.
+            The OpenMM computational platform to use. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         water_resname :
             The residue name of water in the topology. Default is 'HOH'.
         water_O_name :
@@ -1041,7 +1042,7 @@ class NoneqGrandCanonicalMonteCarloSamplerMPI(_ReplicaExchangeMixin, NoneqGrandC
                  timestep: unit.Quantity,
                  log: Union[str, Path],
                  integrator_str: str = "BAOABIntegrator",
-                 platform: openmm.Platform = openmm.Platform.getPlatformByName('CUDA'),
+                 platform: openmm.Platform = None,
                  water_resname: str = "HOH",
                  water_O_name: str = "O",
                  position: unit.Quantity = None,
@@ -1079,7 +1080,8 @@ class NoneqGrandCanonicalMonteCarloSamplerMPI(_ReplicaExchangeMixin, NoneqGrandC
         integrator_str :
             The integrator to use. Default is "BAOABIntegrator".
         platform :
-            The OpenMM computational platform to use. Default is CUDA.
+            The OpenMM computational platform to use. Default is None, which auto-selects
+            the fastest available platform (CUDA > OpenCL > CPU).
         water_resname :
             The residue name of water in the topology. Default is 'HOH'.
         water_O_name :
