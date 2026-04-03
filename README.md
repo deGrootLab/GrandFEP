@@ -33,8 +33,8 @@ which mpirun                  # check if the correct mpirun is used
 </p>
 
 **What this shows:** aggregated error across the full water set (lower is better).  
-- GrandFEP (GCMC): **0.94** kcal/mol  
-- GrandFEP (WaterMC): **1.00** kcal/mol  
+- GrandFEP (GCMC): **0.92** kcal/mol  
+- GrandFEP (WaterMC): **0.99** kcal/mol  
 - FEP+: **0.86** kcal/mol  
 - OpenFE: **1.60** kcal/mol  
 
