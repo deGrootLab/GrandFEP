@@ -851,9 +851,23 @@ class BaseNPTWaterMCSampler:
         for particle_ind in range(system.getNumParticles()):
             if system.isVirtualSite(particle_ind):
                 vs = system.getVirtualSite(particle_ind)
+                if not isinstance(vs, openmm.ThreeParticleAverageSite):
+                    raise NotImplementedError(
+                        f"Virtual site on particle {particle_ind} is of type "
+                        f"{type(vs).__name__}, but only ThreeParticleAverageSite "
+                        f"is supported."
+                    )
+                particles = {}
+                weights = {}
+                for i in range(vs.getNumParticles()):
+                    particles[i] = vs.getParticle(i)
+                    weights[i] = vs.getWeight(i)
                 self.system.setVirtualSite(
                     particle_ind,
-                    openmm.XmlSerializer.deserialize(openmm.XmlSerializer.serialize(vs))
+                    openmm.ThreeParticleAverageSite(
+                        particles[0], particles[1], particles[2],
+                        weights[0], weights[1], weights[2],
+                    )
                 )
 
         # 3.3. Copy bonded, angle, torsion, some 1-4
