@@ -554,7 +554,7 @@ class LambdaOpt:
         log_file = iter_dir / "0" / (self.deffnm + ".log")
         print(f"BAR: parsing {log_file}")
 
-        e_array_list, temperature = _read_energy_from_logs([log_file])
+        e_array_list, temperature = utils.read_energy_from_logs([log_file])
         analysis = utils.FreeEAnalysis(e_array_list, temperature, drop_equil=True)
 
         bar_log = mbar_dir / "bar.log"

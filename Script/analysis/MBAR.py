@@ -14,87 +14,6 @@ from openmm import unit
 logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 from grandfep import utils
 
-# Matches:  DATE TIME - INFO: 3: -246520.956408,-246493.917125,...
-# Values may be space-padded (e.g. "  45951.943919,  31624.122733, ..."),
-# so capture everything after "win:" and split on commas with strip().
-_RE_ENERGY = re.compile(r"- INFO:\s+(\d+):\s*(.+)")
-_RE_TEMP   = re.compile(r"- INFO: T\s+=\s+([\d.]+)\s+K")
-
-
-def read_energy_from_logs(log_files: list, begin: int = 0) -> tuple:
-    """
-    Parse reduced energy arrays and temperature from simulation log files.
-
-    Each log file is expected to contain lines of the form::
-
-        DATE TIME - INFO: {win}: val0,val1,...,valN
-        DATE TIME - INFO: T   = 298.15 K.
-
-    All ``log_files`` are read in order and their frames are concatenated,
-    so pass them in chronological part order (e.g. ``0/1/npt.log``,
-    ``0/2/npt.log``, …).
-
-    Parameters
-    ----------
-    log_files : list of str or Path
-        Log files for each simulation part.
-    begin : int
-        Number of frames to skip at the start of each window (default 0).
-
-    Returns
-    -------
-    e_array_list : list of np.ndarray
-        One array per window, shape ``(n_frames, n_states)``, containing
-        reduced energies in kBT units.
-    temperature : unit.Quantity
-        Temperature parsed from the logs (last occurrence wins).
-    """
-    win_rows: dict = {}
-    temperature = None
-
-    for log_file in log_files:
-        with open(log_file) as f:
-            lines = f.readlines()
-        for line in lines:
-            m_t = _RE_TEMP.search(line)
-            if m_t:
-                temperature = float(m_t.group(1)) * unit.kelvin
-                continue
-            m_e = _RE_ENERGY.search(line)
-            if m_e:
-                win    = int(m_e.group(1))
-                e_vals = np.array([float(v) for v in m_e.group(2).split(",") if v.strip()])
-                win_rows.setdefault(win, []).append(e_vals)
-
-    # --- integrity checks ---
-    if not win_rows:
-        raise ValueError("No energy lines found in the provided log files.")
-
-    n_wins = max(win_rows.keys()) + 1
-    missing = [w for w in range(n_wins) if w not in win_rows]
-    if missing:
-        raise ValueError(f"Missing data for window(s): {missing}")
-
-    n_frames_per_win = {w: len(rows) for w, rows in win_rows.items()}
-    if len(set(n_frames_per_win.values())) > 1:
-        import warnings
-        warnings.warn(
-            "Unequal frame counts across windows: "
-            + ", ".join(f"win {w}={n}" for w, n in sorted(n_frames_per_win.items()))
-        )
-
-    n_vals_per_win = {w: win_rows[w][0].size for w in win_rows}
-    inconsistent = [w for w, n in n_vals_per_win.items() if n != n_wins]
-    if inconsistent:
-        import warnings
-        warnings.warn(
-            f"Window(s) {inconsistent} have {[n_vals_per_win[w] for w in inconsistent]} "
-            f"energy values per frame but {n_wins} windows were detected."
-        )
-
-    e_array_list = [np.array(win_rows[w][begin:]) for w in range(n_wins)]
-    return e_array_list, temperature
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-log", type=Path, required=True, nargs='+',
@@ -127,7 +46,7 @@ args = parser.parse_args()
 print(f"Command line arguments: {' '.join(sys.argv)}")
 print(f"{args.drop_eq =}")
 
-e_array_list, temperature = read_energy_from_logs(args.log, begin=args.begin)
+e_array_list, temperature = utils.read_energy_from_logs(args.log, begin=args.begin)
 
 if args.temperature is not None:
     print(f"Overriding temperature to {args.temperature} K.")

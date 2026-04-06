@@ -3,12 +3,15 @@ import warnings
 from pathlib import Path
 from typing import Union
 import math
+import re
+import logging
 
 import yaml
 import numpy as np
 import pandas as pd
 
 from openmm import app, openmm, unit
+logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 import pymbar
 import parmed
 
@@ -713,6 +716,52 @@ class md_params_yml:
         """Print parameters for easy checking."""
         params = {attr: getattr(self, attr) for attr in dir(self) if (not attr.startswith("_")) and (not attr.startswith("get"))}
         return "\n".join(f"{k}: {v}" for k, v in params.items())
+
+def read_energy_from_logs(log_files: list, begin: int = 0):
+    """Parse reduced energies and temperature from rank-0 npt.log file(s).
+
+    Parameters
+    ----------
+    log_files : list of Path/str
+        Chronological log file parts (e.g. one per restart segment).
+    begin : int
+        Frames to skip at the start of each window.
+
+    Returns
+    -------
+    e_array_list : list of np.ndarray, shape (n_frames, n_states)
+    temperature  : openmm.unit.Quantity
+    """
+    _RE_ENERGY = re.compile(r"- INFO:\s+(\d+):\s*(.+)")
+    _RE_TEMP = re.compile(r"- INFO: T\s+=\s+([\d.]+)\s+K")
+
+    win_rows: dict = {}
+    temperature = None
+    for log_file in log_files:
+        with open(log_file) as f:
+            for line in f:
+                m_t = _RE_TEMP.search(line)
+                if m_t:
+                    temperature = float(m_t.group(1)) * unit.kelvin
+                    continue
+                m_e = _RE_ENERGY.search(line)
+                if m_e:
+                    win = int(m_e.group(1))
+                    vals = np.array([float(v) for v in m_e.group(2).split(",") if v.strip()])
+                    win_rows.setdefault(win, []).append(vals)
+
+    if not win_rows:
+        raise ValueError("No energy lines found in log files.")
+    n_wins = max(win_rows.keys()) + 1
+    missing = [w for w in range(n_wins) if w not in win_rows]
+    if missing:
+        raise ValueError(f"Missing data for window(s): {missing}")
+
+    n_frames = {w: len(rows) for w, rows in win_rows.items()}
+    if len(set(n_frames.values())) > 1:
+        warnings.warn("Unequal frame counts: " +
+                      ", ".join(f"win {w}={n}" for w, n in sorted(n_frames.items())))
+    return [np.array(win_rows[w][begin:]) for w in range(n_wins)], temperature
 
 class FreeEAnalysis:
     """
