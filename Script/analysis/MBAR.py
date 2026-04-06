@@ -2,6 +2,7 @@
 
 import re
 import sys
+import logging
 from pathlib import Path
 import argparse
 
@@ -9,6 +10,8 @@ import pandas as pd
 import numpy as np
 
 from openmm import unit
+
+logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 from grandfep import utils
 
 # Matches:  DATE TIME - INFO: 3: -246520.956408,-246493.917125,...

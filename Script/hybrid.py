@@ -13,6 +13,7 @@ Please provide [ inpcrdA, inpcrdB, prmtopA, prmtopB ] or [ xmlA, xmlB, pdbA, pdb
 from pathlib import Path
 import argparse
 import sys
+import logging
 import time
 import gzip
 
@@ -20,6 +21,7 @@ import numpy as np
 
 from openmm import app, unit, openmm
 
+logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 from grandfep import utils, sampler
 
 def main():

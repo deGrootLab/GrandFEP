@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import argparse
+import logging
 import sys
 import time
 import warnings
@@ -12,6 +13,7 @@ from mpi4py import MPI
 
 from openmm import app, unit, openmm
 
+logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 from grandfep import utils, sampler
 
 

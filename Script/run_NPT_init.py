@@ -2,16 +2,24 @@
 
 from pathlib import Path
 import argparse
+import logging
 import sys
+import warnings
 
 from openmm import app, unit, openmm
 
+logging.getLogger("pymbar").setLevel(logging.ERROR)  # suppress pymbar import warnings
 from grandfep import utils, sampler
 
 
 
 
 def main():
+    warnings.warn(
+        "\nScript `run_NPT_init.py` is deprecated, use grandfep.mdrun.MdRunRE instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     parser = argparse.ArgumentParser(
         description="Run one NPT MD simulation for a hybrid FEP simulation."
         )
