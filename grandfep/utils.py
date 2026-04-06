@@ -718,19 +718,43 @@ class md_params_yml:
         return "\n".join(f"{k}: {v}" for k, v in params.items())
 
 def read_energy_from_logs(log_files: list, begin: int = 0):
-    """Parse reduced energies and temperature from rank-0 npt.log file(s).
+    """
+    Parse reduced energy arrays and temperature from simulation log files.
+
+    Each log file is expected to contain lines of the form::
+
+        DATE TIME - INFO: {win}: val0,val1,...,valN
+        DATE TIME - INFO: T   = 298.15 K.
+
+    All ``log_files`` are read in order and their frames are concatenated,
+    so pass them in chronological part order (e.g. ``0/1/npt.log``,
+    ``0/2/npt.log``, …).
 
     Parameters
     ----------
-    log_files : list of Path/str
-        Chronological log file parts (e.g. one per restart segment).
+    log_files : list of str or Path
+        Log files for each simulation part.
     begin : int
-        Frames to skip at the start of each window.
+        Number of frames to skip at the start of each window (default 0).
 
     Returns
     -------
-    e_array_list : list of np.ndarray, shape (n_frames, n_states)
-    temperature  : openmm.unit.Quantity
+    e_array_list : list of np.ndarray
+        One array per window, shape ``(n_frames, n_states)``, containing
+        reduced energies in kBT units.
+    temperature : unit.Quantity
+        Temperature parsed from the logs (last occurrence wins).
+
+    Examples
+    --------
+    .. code-block:: python
+        :linenos:
+
+        from grandfep import utils
+        window=0
+        e_array_list, temperature = utils.read_energy_from_logs([f"{window}/{part}/npt.log" for part in range(1,5)])
+        analysis = utils.FreeEAnalysis(e_array_list, temperature)
+
     """
     _RE_ENERGY = re.compile(r"- INFO:\s+(\d+):\s*(.+)")
     _RE_TEMP = re.compile(r"- INFO: T\s+=\s+([\d.]+)\s+K")
