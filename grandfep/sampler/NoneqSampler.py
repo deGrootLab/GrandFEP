@@ -394,23 +394,23 @@ class NoneqGrandCanonicalMonteCarloSampler(BaseGrandCanonicalMonteCarloSampler):
                 explosion = True
                 break
 
-            if not explosion:
-                # last perturbation step
-                l_vdw = l_vdw_list[-1]
-                l_chg = l_chg_list[-1]
-                energy_0 = self.simulation.context.getState(getEnergy=True).getPotentialEnergy()
-                self.simulation.context.setParameter("lambda_gc_vdw", l_vdw)
-                self.simulation.context.setParameter("lambda_gc_coulomb", l_chg)
-                energy_i = self.simulation.context.getState(getEnergy=True).getPotentialEnergy()
-                protocol_work += energy_i - energy_0
-                protocol_work_list.append(
-                    (energy_i - energy_0).value_in_unit(unit.kilocalories_per_mole)
-                )
-                # check nan
-                nan_flag0 = np.isnan(energy_0.value_in_unit(unit.kilocalories_per_mole))
-                nan_flagi = np.isnan(energy_i.value_in_unit(unit.kilocalories_per_mole))
-                if nan_flag0 or nan_flagi:
-                    explosion = True
+        if not explosion:
+            # last perturbation step
+            l_vdw = l_vdw_list[-1]
+            l_chg = l_chg_list[-1]
+            energy_0 = self.simulation.context.getState(getEnergy=True).getPotentialEnergy()
+            self.simulation.context.setParameter("lambda_gc_vdw", l_vdw)
+            self.simulation.context.setParameter("lambda_gc_coulomb", l_chg)
+            energy_i = self.simulation.context.getState(getEnergy=True).getPotentialEnergy()
+            protocol_work += energy_i - energy_0
+            protocol_work_list.append(
+                (energy_i - energy_0).value_in_unit(unit.kilocalories_per_mole)
+            )
+            # check nan
+            nan_flag0 = np.isnan(energy_0.value_in_unit(unit.kilocalories_per_mole))
+            nan_flagi = np.isnan(energy_i.value_in_unit(unit.kilocalories_per_mole))
+            if nan_flag0 or nan_flagi:
+                explosion = True
 
         if explosion:
             self.logger.info(f"GC failed at (vdw,Coulomb)=({l_vdw},{l_chg})")
@@ -603,7 +603,7 @@ class NoneqGrandCanonicalMonteCarloSampler(BaseGrandCanonicalMonteCarloSampler):
         center_pos = positions[self.reference_atoms]
         return np.mean(center_pos, axis=0)
 
-    def get_water_state(self, positions) -> tuple[dict, np.array]:
+    def get_water_state(self, positions) -> tuple:
         """
         Check whether the water molecule is inside the box (1) or not (0).
 

@@ -299,6 +299,7 @@ class MyTestCase(unittest.TestCase):
                     np.all(f_match),
                     f"Move is rejected, but the Force has been changed. Diff by {np.sum(f_match)}"
                 )
+            self.assertEqual(len(protocol_work_list), len(l_vdw) - 1)
             print(accept, acc_prob, protocol_work, n_water)
 
     def test_insert_GCMC(self):
@@ -349,6 +350,7 @@ class MyTestCase(unittest.TestCase):
                     np.all(f_match),
                     f"Move is rejected, but the Force has been changed. Diff by {np.sum(f_match)}"
                 )
+            self.assertEqual(len(protocol_work_list), len(l_vdw)-1)
             print(accept, acc_prob, protocol_work, n_water, sw_inside)
 
     def test_delete_GCMC(self):
@@ -491,19 +493,27 @@ class MyTestCaseNEwaterMC(unittest.TestCase):
                 "box_vectors": np.array(h_factory.hybrid_system.getDefaultPeriodicBoxVectors())
             }
         )
+        non_explode = 0
         for i in range(10):
             print(i, "In")
-            samp.move_in(
+            accept, acc_prob, protocol_work, protocol_work_list = samp.move_in(
                 [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4 ,0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
                 40, "./")
+            if acc_prob > 0.0:
+                non_explode += 1
+                self.assertEqual(len(protocol_work_list), 20)
 
         for i in range(10):
             print(i, "Out")
-            samp.move_out(
+            accept, acc_prob, protocol_work, protocol_work_list = samp.move_out(
                 [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4 ,0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
                 40, "./")
+            if acc_prob > 0.0:
+                non_explode += 1
+                self.assertEqual(len(protocol_work_list), 20)
+        print(non_explode)
 
     def test_random_move_out(self):
         pass
