@@ -450,9 +450,39 @@ class MyTestCaseNEwaterMC(unittest.TestCase):
         )
         tock = time.time()
         print(f"## Time for initializing a REST2-waterMC system {tock - tick:.3f} s")
+        samp.simulation.minimizeEnergy()
         pos, vel = samp.random_pos_vel_water()
         self.assertEqual(pos.shape, (3,3))
         self.assertEqual(vel.shape, (3,3))
+
+        n_samples = 50
+        oh_lengths = []
+        for _ in range(n_samples):
+            pos, vel = samp.random_pos_vel_water()
+            pos_nm = pos.value_in_unit(unit.nanometer)   # (3, 3)
+            vel_nm = vel.value_in_unit(unit.nanometer / unit.picosecond)
+
+            # 1. Bond lengths must be preserved
+            for h in [1, 2]:
+                oh_vec = pos_nm[h] - pos_nm[0]
+                oh_lengths.append(np.linalg.norm(oh_vec))
+
+            # 2. H velocity relative to O must be perpendicular to the OH bond
+            for h in [1, 2]:
+                oh_vec = pos_nm[h] - pos_nm[0]
+                rel_vel = vel_nm[h] - vel_nm[0]
+                dot = np.dot(oh_vec, rel_vel)
+                self.assertAlmostEqual(
+                    dot, 0.0, places=10,
+                    msg=f"H{h} relative velocity is not perpendicular to OH bond (dot={dot:.3e})"
+                )
+
+        # All OH bond lengths should be identical (same cached geometry, just rotated)
+        oh_lengths = np.array(oh_lengths)
+        self.assertTrue(
+            np.allclose(oh_lengths, oh_lengths[0]),
+            f"OH bond lengths vary after rotation: min={oh_lengths.min():.6f}, max={oh_lengths.max():.6f} nm"
+        )
 
     def test_random_move_in(self):
         print()

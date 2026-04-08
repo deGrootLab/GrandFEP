@@ -1324,6 +1324,18 @@ class NoneqNPTWaterMCSampler(BaseNPTWaterMCSampler):
             self.simulation.context.setVelocities(velocity_save)
 
         pos, vel = self.water_pos_vel_cache.pop()
+
+        # Apply a random rotation around atom 0 (oxygen)
+        rot_matrix = utils.random_rotation_matrix()
+        pos_val = pos.value_in_unit(unit.nanometer)
+        vel_val = vel.value_in_unit(unit.nanometer / unit.picosecond)
+        for i in range(1, len(pos_val)):
+            pos_val[i] = pos_val[0] + np.dot(rot_matrix, pos_val[i] - pos_val[0])
+        for i in range(len(vel_val)):
+            vel_val[i] = np.dot(rot_matrix, vel_val[i])
+        pos = pos_val * unit.nanometer
+        vel = vel_val * unit.nanometer / unit.picosecond
+
         return pos, vel
 
     def _move_init(self):
