@@ -791,8 +791,8 @@ class NoneqGrandCanonicalMonteCarloSampler(BaseGrandCanonicalMonteCarloSampler):
         # random a real water inside the sphere to be deleted
         water_stat_dict, _dist = self.get_water_state(pos_old)
         water_inside = []
-        for res_index, state in water_stat_dict.items():
-            flag_inside = state == 1
+        for res_index, w_state in water_stat_dict.items():
+            flag_inside = w_state == 1
             flag_not_s  = res_index != self.switching_water
             flag_real   = res_index not in ghost_list_old
             if flag_inside and flag_not_s and flag_real:
