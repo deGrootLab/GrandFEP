@@ -183,9 +183,19 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="grandfep.utils.FreeEAnalysis">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grandfep.utils.</span></span><span class="sig-name descname"><span class="pre">FreeEAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyword</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_equil</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.FreeEAnalysis" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grandfep.utils.</span></span><span class="sig-name descname"><span class="pre">FreeEAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_array_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_equil</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.FreeEAnalysis" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to analyze free energy calculations using BAR/MBAR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_array_list</strong> (<em>list</em><em> of </em><em>np.ndarray</em>) – List of energy arrays, one per window.  Each array has shape
+<code class="docutils literal notranslate"><span class="pre">(n_frames,</span> <span class="pre">n_states)</span></code> and contains reduced energies (in kBT units).</p></li>
+<li><p><strong>temperature</strong> (<em>unit.Quantity</em>) – Simulation temperature (e.g. <code class="docutils literal notranslate"><span class="pre">298.15</span> <span class="pre">*</span> <span class="pre">unit.kelvin</span></code>).</p></li>
+<li><p><strong>drop_equil</strong> (<em>bool</em>) – Whether to discard equilibration frames (default True).</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="grandfep.utils.FreeEAnalysis.print_res_all">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">print_res_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.FreeEAnalysis.print_res_all" title="Link to this definition">¶</a></dt>
@@ -230,7 +240,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="grandfep.utils.FreeEAnalysis.print_uncorrelate">
 <span class="sig-name descname"><span class="pre">print_uncorrelate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.FreeEAnalysis.print_uncorrelate" title="Link to this definition">¶</a></dt>
-<dd><p>Print the number of uncorrelated sample in each file</p>
+<dd><p>Print the number of uncorrelated samples in each window.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -759,6 +769,20 @@ in, for instance, a minimized structure.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="grandfep.utils.rst7_reporter.report">
+<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.rst7_reporter.report" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a report from an OpenMM State object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">openmm.app.simulation.Simulation</span></code></span>) – The Simulation to generate a report for</p></li>
+<li><p><strong>state</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">openmm.openmm.State</span></code></span>) – The current state of the simulation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="grandfep.utils.rst7_reporter.report_positions_velocities">
 <span class="sig-name descname"><span class="pre">report_positions_velocities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodicBoxVectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocities</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.rst7_reporter.report_positions_velocities" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a report.</p>
@@ -1275,6 +1299,43 @@ to define the box. Without setting the box, trajectory files may lack box inform
 <dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="grandfep.utils.read_energy_from_logs">
+<span class="sig-prename descclassname"><span class="pre">grandfep.utils.</span></span><span class="sig-name descname"><span class="pre">read_energy_from_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#grandfep.utils.read_energy_from_logs" title="Link to this definition">¶</a></dt>
+<dd><p>Parse reduced energy arrays and temperature from simulation log files.</p>
+<p>Each log file is expected to contain lines of the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DATE</span> <span class="n">TIME</span> <span class="o">-</span> <span class="n">INFO</span><span class="p">:</span> <span class="p">{</span><span class="n">win</span><span class="p">}:</span> <span class="n">val0</span><span class="p">,</span><span class="n">val1</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">valN</span>
+<span class="n">DATE</span> <span class="n">TIME</span> <span class="o">-</span> <span class="n">INFO</span><span class="p">:</span> <span class="n">T</span>   <span class="o">=</span> <span class="mf">298.15</span> <span class="n">K</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>All <code class="docutils literal notranslate"><span class="pre">log_files</span></code> are read in order and their frames are concatenated,
+so pass them in chronological part order (e.g. <code class="docutils literal notranslate"><span class="pre">0/1/npt.log</span></code>,
+<code class="docutils literal notranslate"><span class="pre">0/2/npt.log</span></code>, …).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_files</strong> (<em>list</em><em> of </em><em>str</em><em> or </em><em>Path</em>) – Log files for each simulation part.</p></li>
+<li><p><strong>begin</strong> (<em>int</em>) – Number of frames to skip at the start of each window (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>e_array_list</strong> (<em>list of np.ndarray</em>) – One array per window, shape <code class="docutils literal notranslate"><span class="pre">(n_frames,</span> <span class="pre">n_states)</span></code>, containing
+reduced energies in kBT units.</p></li>
+<li><p><strong>temperature</strong> (<em>unit.Quantity</em>) – Temperature parsed from the logs (last occurrence wins).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">grandfep</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="linenos">2</span><span class="n">window</span><span class="o">=</span><span class="mi">0</span>
+<span class="linenos">3</span><span class="n">e_array_list</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_energy_from_logs</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">/npt.log&quot;</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="linenos">4</span><span class="n">analysis</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">FreeEAnalysis</span><span class="p">(</span><span class="n">e_array_list</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

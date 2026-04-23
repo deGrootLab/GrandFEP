@@ -97,6 +97,15 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="version">
 <h1>Version<a class="headerlink" href="#version" title="Link to this heading">¶</a></h1>
+<section id="v1-1-1-bug-fix">
+<h2>v1.1.1 Bug Fix<a class="headerlink" href="#v1-1-1-bug-fix" title="Link to this heading">¶</a></h2>
+<section id="bug-customise-force-hybridrest2-drops-barostat-and-customexternalforce">
+<h3>Bug: <code class="docutils literal notranslate"><span class="pre">customise_force_hybridREST2</span></code> drops barostat and <code class="docutils literal notranslate"><span class="pre">CustomExternalForce</span></code><a class="headerlink" href="#bug-customise-force-hybridrest2-drops-barostat-and-customexternalforce" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MonteCarloBarostat</span></code>, <code class="docutils literal notranslate"><span class="pre">MonteCarloMembraneBarostat</span></code>, and <code class="docutils literal notranslate"><span class="pre">CustomExternalForce</span></code> were
+collected from the input system but never re-added to <code class="docutils literal notranslate"><span class="pre">self.system</span></code> during force
+reconstruction.</p>
+</section>
+</section>
 <section id="v1-1-0-terminal-flip-mc">
 <h2>v1.1.0 Terminal Flip MC<a class="headerlink" href="#v1-1-0-terminal-flip-mc" title="Link to this heading">¶</a></h2>
 </section>
