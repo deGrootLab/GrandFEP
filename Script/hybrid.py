@@ -130,7 +130,9 @@ def main():
             old_to_new_core_atom_map, # Alchemical Atoms that should map from A to B
             use_dispersion_correction=True,
             scale_dihe=scale_dihe,
-            old_rest2_atom_indices=old_rest2_atom_indices if args.REST2_res is not None else None)
+            old_rest2_atom_indices=old_rest2_atom_indices if args.REST2_res is not None else None,
+            constraint_allow_diff=0.98
+            )
         
         for dihe_key in ["old_only", "new_only"]:
             # for t_dict in [h_factory.hybrid_torsion_dict["old_only"], h_factory.hybrid_torsion_dict["new_only"]]:

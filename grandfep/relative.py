@@ -182,7 +182,9 @@ class HybridTopologyFactory:
                  softcore_alpha=0.5,
                  softcore_LJ_v2=True,
                  softcore_LJ_v2_alpha=0.85,
-                 interpolate_old_and_new_14s=False):
+                 interpolate_old_and_new_14s=False,
+                 constraint_allow_diff=None
+                 ):
         """
         Initialize the Hybrid topology factory.
 
@@ -278,7 +280,7 @@ class HybridTopologyFactory:
 
         # print("Setting force field terms")
         # Copy constraints, checking to make sure they are not changing
-        self._handle_constraints()
+        self._handle_constraints(constraint_allow_diff)
 
         # Copy over relevant virtual sites - pick up refactor from here
         self._handle_virtual_sites()
@@ -611,7 +613,7 @@ class HybridTopologyFactory:
                               "dissallowed")
                     raise AssertionError
 
-    def _handle_constraints(self):
+    def _handle_constraints(self, constraint_allow_diff=None):
         """
         This method adds relevant constraints from the old and new systems.
 
@@ -649,8 +651,14 @@ class HybridTopologyFactory:
                                                   hybrid_atoms[1], length)
                 constraint_lengths[hybrid_atoms] = length
             else:
-                if constraint_lengths[hybrid_atoms] != length:
-                    raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                if constraint_allow_diff is None:
+                    if constraint_lengths[hybrid_atoms] != length:
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                else:
+                    if min(constraint_lengths[hybrid_atoms],length) / max(constraint_lengths[hybrid_atoms],length) < min(constraint_allow_diff, 1/constraint_allow_diff):
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                    elif constraint_lengths[hybrid_atoms] != length:
+                        print(f"constraint changes from {constraint_lengths[hybrid_atoms]} to {length}")
 
     @staticmethod
     def _copy_threeparticleavg(atm_map, env_atoms, vs):
@@ -2855,7 +2863,8 @@ class HybridTopologyFactoryREST2:
                  old_rest2_atom_indices=None,
                  use_dispersion_correction=False,
                  softcore_alpha=0.5,
-                 scale_dihe: dict=None
+                 scale_dihe: dict=None,
+                 constraint_allow_diff=None
                  ):
         """
         Parameters
@@ -2953,7 +2962,7 @@ class HybridTopologyFactoryREST2:
         self._validate_disjoint_sets()
 
         # Copy constraints, checking to make sure they are not changing
-        self._handle_constraints()
+        self._handle_constraints(constraint_allow_diff)
 
         # Copy over relevant virtual sites - pick up refactor from here
         self._handle_virtual_sites()
@@ -3234,7 +3243,7 @@ class HybridTopologyFactoryREST2:
                               "dissallowed")
                     raise AssertionError
 
-    def _handle_constraints(self):
+    def _handle_constraints(self, constraint_allow_diff):
         """
         This method adds relevant constraints from the old and new systems.
 
@@ -3271,8 +3280,14 @@ class HybridTopologyFactoryREST2:
                                                   hybrid_atoms[1], length)
                 constraint_lengths[hybrid_atoms] = length
             else:
-                if constraint_lengths[hybrid_atoms] != length:
-                    raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                if constraint_allow_diff is None:
+                    if constraint_lengths[hybrid_atoms] != length:
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                else:
+                    if min(constraint_lengths[hybrid_atoms],length) / max(constraint_lengths[hybrid_atoms],length) < min(constraint_allow_diff, 1/constraint_allow_diff):
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                    elif constraint_lengths[hybrid_atoms] != length:
+                        print(f"constraint changes from {constraint_lengths[hybrid_atoms]} to {length}")
 
     @staticmethod
     def _copy_threeparticleavg(atm_map, env_atoms, vs):
