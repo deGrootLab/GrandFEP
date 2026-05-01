@@ -54,7 +54,7 @@ def main():
                         help="Output Serialized system, can be .xml or .xml.gz")
     # if given, use REST2
     parser.add_argument("-REST2", action='store_true')
-    parser.add_argument("-dum_dihe_scale", nargs="+", type=float, default=[0.0, 1.0, 0.0, 0.0, 0.0],
+    parser.add_argument("-dum_dihe_scale", nargs="+", type=float, default=[0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
                         help="Dihedral scaling for dummy atoms. ")
     parser.add_argument("-REST2_res", type=str,
                         nargs="+")

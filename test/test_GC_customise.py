@@ -1506,6 +1506,39 @@ class MyTestREST2(unittest.TestCase):
                 for i, f_1, f_2 in zip(exclude_B, f_h, f_B):
                     self.assertFalse(np.all(f_1==f_2), f"Atom {i} force should not match.\n    {f_1}\n    {f_2}")
 
+    def test_hybrid_REST2_TREK2_lipid21(self):
+        print()
+        print("# Test HybridFF_REST2, Can we hybrid a membrane system.")
+
+        base = Path(__file__).resolve().parent
+
+        mdp = utils.md_params_yml(base / "TREK2_lipid21/hybrid_map.yml")
+
+        inpcrd0, prmtop0, system0 = load_amber_sys(
+            base / "TREK2_lipid21" / "Q6F_solv_hex.inpcrd",
+            base / "TREK2_lipid21" / "Q6F_solv.prmtop", nonbonded_Amber)
+        inpcrd1, prmtop1, system1 = load_amber_sys(
+            base / "TREK2_lipid21" / "lig_00000_solv_hex.inpcrd",
+            base / "TREK2_lipid21" / "lig_00000_solv.prmtop", nonbonded_Amber)
+        old_to_new_atom_map, old_to_new_core_atom_map = utils.prepare_atom_map(
+            prmtop0.topology,
+            prmtop1.topology,
+            mdp.mapping_list)
+        h_factory = utils.HybridTopologyFactoryREST2(
+            system0, inpcrd0.getPositions(), prmtop0.topology,
+            system1, inpcrd1.getPositions(), prmtop1.topology,
+            old_to_new_atom_map,  # All atoms that should map from A to B
+            old_to_new_core_atom_map,  # Alchemical Atoms that should map from A to B
+            use_dispersion_correction=True,
+            scale_dihe={
+                1: 0.0, "i1": 0.0,
+                2: 0.0, "i2": 0.0,
+                3: 0.0, "i3": 0.0,
+                4: 0.0, "i4": 0.0,
+                5: 0.0, "i5": 0.0,
+            },
+            constraint_allow_diff = 0.98
+        )
 
 class MytestREST2_GCMC(unittest.TestCase):
     def test_REST2_GCMC_build(self):

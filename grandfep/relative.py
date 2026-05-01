@@ -91,7 +91,7 @@ def check_dihe_type(bond_const_list, torsion_parameters):
 
     flag_13 = (at1, at3) in bond_const_list
     flag_02 = (at0, at2) in bond_const_list
-    if flag_01 and flag_12 and flag_23 and periodicity in [1, 3, 4]:
+    if flag_01 and flag_12 and flag_23 and periodicity in [1, 3, 4, 5, 6, 7, 8, 9]:
         return "normal"
     elif flag_01 and flag_12 and flag_23 and periodicity == 2:
         return "double"
@@ -2911,8 +2911,8 @@ class HybridTopologyFactoryREST2:
         """
         if scale_dihe is None:
             scale_dihe = {
-                1:1.0, 2:1.0, 3:1.0, 4:1.0, 5:1.0,
-                "i1": 1.0, "i2": 1.0, "i3": 1.0, "i4": 1.0, "i5": 1.0 # improper
+                1:1.0, 2:1.0, 3:1.0, 4:1.0, 5:1.0, 6:1.0,
+                "i1": 1.0, "i2": 1.0, "i3": 1.0, "i4": 1.0, "i5": 1.0, "i6": 1.0 # improper
             }
         # Assign system positions and force
         self._old_system = copy.deepcopy(old_system)
