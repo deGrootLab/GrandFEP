@@ -623,7 +623,7 @@ class md_params_yml:
         self.gen_temp = 300.0 * unit.kelvin
         self.restraint = False
         self.restraint_fc = 1000.0  * unit.kilojoule_per_mole / unit.nanometer**2
-        self.pcoupltype = None
+        self.pcoupltype = "MonteCarloBarostat"
         self.ref_p = 1.0 * unit.bar
         self.nstpcouple = 25
         self.surface_tension = 0.0 * unit.bar * unit.nanometer

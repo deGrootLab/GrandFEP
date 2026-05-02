@@ -154,7 +154,20 @@ class MdRunRE:
         box_vec   = pdb.topology.getPeriodicBoxVectors()
         system.setDefaultPeriodicBoxVectors(*box_vec)
 
-        system.addForce(openmm.MonteCarloBarostat(mdp.ref_p, mdp.ref_t, mdp.nstpcouple))
+        if mdp.pcoupltype == "MonteCarloBarostat":
+            system.addForce(openmm.MonteCarloBarostat(mdp.ref_p, mdp.ref_t, mdp.nstpcouple))
+            print(f"Add Barostate {mdp.ref_p} {mdp.ref_t} {mdp.nstpcouple}")
+        elif  mdp.pcoupltype == "MonteCarloMembraneBarostat":
+            system.addForce(openmm.MonteCarloMembraneBarostat(
+                mdp.ref_p,
+                mdp.surface_tension,
+                mdp.ref_t,
+                openmm.MonteCarloMembraneBarostat.XYIsotropic,
+                openmm.MonteCarloMembraneBarostat.ZFree,
+                mdp.nstpcouple))
+            print(f"Add MembraneBarostat ref_p={mdp.ref_p} tension={mdp.surface_tension} ref_t={mdp.ref_t} nstpcouple={mdp.nstpcouple}")
+        else:
+            print("No Barostat added")
         if mdp.restraint:
             posres, n_res, res_names = utils.prepare_restraints_force(
                 topology, positions, mdp.restraint_fc,
