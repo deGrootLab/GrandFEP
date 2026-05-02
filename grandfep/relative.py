@@ -653,10 +653,10 @@ class HybridTopologyFactory:
             else:
                 if constraint_allow_diff is None:
                     if constraint_lengths[hybrid_atoms] != length:
-                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing from {constraint_lengths[hybrid_atoms]} to {length}')
                 else:
                     if min(constraint_lengths[hybrid_atoms],length) / max(constraint_lengths[hybrid_atoms],length) < min(constraint_allow_diff, 1/constraint_allow_diff):
-                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing from {constraint_lengths[hybrid_atoms]} to {length}')
                     elif constraint_lengths[hybrid_atoms] != length:
                         print(f"constraint changes from {constraint_lengths[hybrid_atoms]} to {length}")
 
@@ -3282,10 +3282,10 @@ class HybridTopologyFactoryREST2:
             else:
                 if constraint_allow_diff is None:
                     if constraint_lengths[hybrid_atoms] != length:
-                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing, from {constraint_lengths[hybrid_atoms]} to {length}')
                 else:
                     if min(constraint_lengths[hybrid_atoms],length) / max(constraint_lengths[hybrid_atoms],length) < min(constraint_allow_diff, 1/constraint_allow_diff):
-                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing')
+                        raise AssertionError(f'constraint length between {at1} and {at2} in the new system is changing, from {constraint_lengths[hybrid_atoms]} to {length}')
                     elif constraint_lengths[hybrid_atoms] != length:
                         print(f"constraint changes from {constraint_lengths[hybrid_atoms]} to {length}")
 

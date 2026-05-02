@@ -131,7 +131,7 @@ def main():
             use_dispersion_correction=True,
             scale_dihe=scale_dihe,
             old_rest2_atom_indices=old_rest2_atom_indices if args.REST2_res is not None else None,
-            constraint_allow_diff=0.98
+            constraint_allow_diff=0.92
             )
         
         for dihe_key in ["old_only", "new_only"]:
